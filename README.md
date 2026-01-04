@@ -27,8 +27,10 @@ Win conditions (4-in-a-row or 2x2 box):
 
 ## Repository Structure
 
+```text
 .
 `-- teeko_player.py    # Teeko AI agent + interactive CLI (rename your file to this if desired)
+```
 
 If your file currently has a different name, you can keep it as-is. The commands below assume the file is named `teeko_player.py`.
 
