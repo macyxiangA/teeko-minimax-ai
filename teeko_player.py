@@ -86,8 +86,7 @@ class TeekoPlayer:
 
     def succ(self, state, my_piece): 
         """
-        TODO: Generate a list of valid successors for the current game state 
-        on placing your piece. (defined by self.my_piece)
+        Generate valid successor states for the current game state.
         """
         successors = []
 
@@ -199,17 +198,41 @@ class TeekoPlayer:
         if val != 0:
             return float(val)
 
-        my_count = 0
-        opp_count = 0
-        for r in range(5):
-            for c in range(5):
-                if state[r][c] == self.my_piece:
-                    my_count += 1
-                elif state[r][c] == self.opp:
-                    opp_count += 1
+        return self._position_score(state, self.my_piece) - self._position_score(state, self.opp)
 
-        heuristic_val = (my_count - opp_count) / 4.0
-        return heuristic_val
+    def _position_score(self, state, piece):
+        """Score the strongest non-terminal line or 2x2 box for one player."""
+        best = 0.0
+
+        lines = []
+        for i in range(5):
+            for j in range(2):
+                lines.append([state[i][j+k] for k in range(4)])
+                lines.append([state[j+k][i] for k in range(4)])
+
+        for r in range(2):
+            for c in range(2):
+                lines.append([state[r+k][c+k] for k in range(4)])
+
+        for r in range(2):
+            for c in range(3, 5):
+                lines.append([state[r+k][c-k] for k in range(4)])
+
+        for r in range(4):
+            for c in range(4):
+                lines.append([
+                    state[r][c], state[r][c+1],
+                    state[r+1][c], state[r+1][c+1],
+                ])
+
+        for line in lines:
+            blocker = self.opp if piece == self.my_piece else self.my_piece
+            if blocker in line:
+                continue
+            count = line.count(piece)
+            best = max(best, count / 4.0)
+
+        return best
  
     def game_value(self, state):
         """ 
